@@ -18,6 +18,7 @@ export const connectDatabase = async (): Promise<Database> => {
     const db = client.db('tinyhouse');
 
     return {
-        listings: db.collection('test_listings')
+        listings: db.collection('test_listings'),
+        users: db.collection('users')
     }
 };

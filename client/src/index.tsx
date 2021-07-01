@@ -5,7 +5,7 @@ import {
 } from '@apollo/client';
 import React from 'react';
 import { render } from 'react-dom';
-import Listings from './sections/Listings/Listings';
+import Routes from './routes';
 
 import './styles/index.css';
 
@@ -16,7 +16,7 @@ const client = new ApolloClient({
 
 render(
 	<ApolloProvider client={ client }>
-		<Listings />
+		<Routes />
 	</ApolloProvider>,
 	document.getElementById('root')
 );
