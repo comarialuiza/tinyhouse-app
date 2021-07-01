@@ -1,0 +1,13 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "extends": ["plugin:@typescriot-eslint/recommended"],
+    "env": { "node": true },
+    "rules": {
+        "indent": "off",
+        "@types-eslint/indent": "off"
+    }
+}
