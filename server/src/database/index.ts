@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { Database } from '../lib/types';
+import { Database, User, Listing, Booking } from '../lib/types';
 
 const user = process.env.MONGO_USER;
 const password = process.env.MONGO_PASSWORD;
@@ -18,7 +18,8 @@ export const connectDatabase = async (): Promise<Database> => {
     const db = client.db('tinyhouse');
 
     return {
-        listings: db.collection('test_listings'),
-        users: db.collection('users')
+        listings: db.collection<Listing>('listings'),
+        users: db.collection<User>('users'),
+        bookings: db.collection<Booking>('bookings')
     }
 };
