@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Home from './sections/Home/Home';
 import Host from './sections/Host/Host';
@@ -8,8 +8,21 @@ import Login from './sections/Login/Login';
 import NotFound from './sections/NotFound/NotFound';
 import User from './sections/User/User';
 import { Layout } from 'antd';
+import { Viewer } from './lib/types';
+
+const initialViewer: Viewer = {
+	id: null,
+	token: null,
+	avatar: null,
+	hasWallet: null,
+	didRequest: false
+}
 
 const Routes = () => {
+	const [viewer, setViewer] = useState<Viewer>(initialViewer);
+
+	console.log(viewer);
+
 	return (
 		<BrowserRouter>
 			<Layout id='app'>
@@ -18,7 +31,13 @@ const Routes = () => {
 					<Route path='/host' exact component={Host} />
 					<Route path='/listing/:id' exact component={Listing} />
 					<Route path='/listings/:location?' exact component={Listings} />
-					<Route path='/login' exact component={Login} />
+					<Route
+						path='/login'
+						exact
+						render={
+							props => <Login {...props} setViewer={setViewer} />
+						}
+					/>
 					<Route path='/user/:id' exact component={User} />
 					<Route component={NotFound} />
 				</Switch>
