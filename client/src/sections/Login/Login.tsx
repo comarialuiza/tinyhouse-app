@@ -1,16 +1,15 @@
 import { useApolloClient, useMutation } from '@apollo/client';
+import { Card, Layout, Spin, Typography } from 'antd';
 import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import { Card, Layout, Typography, Spin } from 'antd';
-import { Viewer } from '../../lib/types';
+import { Redirect } from 'react-router';
+import ErrorBanner from '../../components/ErrorBanner';
 import googleLogo from '../../images/google_logo.jpg';
+import LogIn from '../../lib/graphql/mutations/LogIn';
+import { LogIn as LogInData, LogInVariables } from '../../lib/graphql/mutations/__generated__/LogIn';
 import AuthUrl from '../../lib/graphql/queries/AuthUrl';
 import { AuthUrl as AuthUrlData } from '../../lib/graphql/queries/__generated__/AuthUrl';
-import { LogIn as LogInData, LogInVariables } from '../../lib/graphql/mutations/__generated__/LogIn';
-import LogIn from '../../lib/graphql/mutations/LogIn'; 
-import LogOut from '../../lib/graphql/mutations/LogOut';
-import ErrorBanner from '../../components/ErrorBanner';
-import { displaySuccessNotification, displayErrorMessage } from '../../utils/NotificationUtils';
-import { Redirect } from 'react-router';
+import { Viewer } from '../../lib/types';
+import { displayErrorMessage, displaySuccessNotification } from '../../utils/NotificationUtils';
 
 const { Content } = Layout;
 const { Text, Title } = Typography;
