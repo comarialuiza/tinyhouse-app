@@ -1,13 +1,38 @@
 import { IResolvers } from 'apollo-server-express';
 import { Viewer, Database, User } from '../../../lib/types';
+import { Response, Request } from 'express';
 import { Google } from '../../../lib/api/Google';
 import { LogInArgs } from './types';
 import crypto from 'crypto';
 
+const cookieOptions = {
+	httpOnly: true,
+	sameSite: true,
+	signed: true,
+	secure: process.env.NODE_ENV === 'production'
+}
+
+const logInViaCookie = async (token: string, db: Database, req: Request, res: Response): Promise<User | undefined> => {
+	const updatedRes = await db.users.findOneAndUpdate(
+		{ _id: req.signedCookies.viewer },
+		{ $set: { token } },
+		{ returnOriginal: false }
+	);
+
+	let viewer = updatedRes.value;
+	
+	if (!viewer) {
+		res.clearCookie('@tinyhouse/viewer', cookieOptions);
+	}
+
+	return viewer;
+}
+
 const logInViaGoogle = async (
 	code: string,
 	token: string,
-	db: Database
+	db: Database,
+	res: Response
 ): Promise<User | undefined> => {
 	const { user } = await Google.logIn(code);
 
@@ -54,6 +79,11 @@ const logInViaGoogle = async (
 		viewer = insertResult.ops[0];
 	}
 
+	res.cookie('@tinyhouse/viewer', userId, {
+		...cookieOptions,
+		maxAge: 365 * 24 * 60 * 60 * 1000
+	});
+
 	return viewer;
 };
 
@@ -71,13 +101,15 @@ export const viewerResolvers: IResolvers = {
 		logIn: async (
 			_root: undefined,
 			{ input }: LogInArgs,
-			{ db }: { db: Database }
+			{ db, req, res }: { db: Database, req: Request, res: Response }
 		): Promise<Viewer> => {
 			try {
 				const code = input ? input.code : null;
 				const token = crypto.randomBytes(16).toString('hex');
 
-				const viewer = code ? await logInViaGoogle(code, token, db) : undefined;
+				const viewer = code ?
+					await logInViaGoogle(code, token, db, res) :
+					await logInViaCookie(token, db, req, res);
 
 				if (!viewer) {
 					return { didRequest: true };
@@ -94,8 +126,10 @@ export const viewerResolvers: IResolvers = {
 				throw new Error(`Failed to log in: ${err}`);
 			}
 		},
-		logOut: (): Viewer => {
+		logOut: (_root: undefined, _args: {}, { res }: { res: Response }): Viewer => {
 			try {
+				res.clearCookie('@tinyhouse/viewer', cookieOptions)
+
 				return { didRequest: true };
 			} catch (err) {
 				throw new Error(`Failed to log out: ${err}`);
