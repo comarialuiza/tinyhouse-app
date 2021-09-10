@@ -27,9 +27,11 @@ const Login = ({ setViewer }: LoginProps) => {
 		error: logInError
 	}] = useMutation<LogInData, LogInVariables>(LogIn, {
 		onCompleted: (data) => {
-			if (data && data.logIn) {
+			if (data && data.logIn && data.logIn.token) {
 				setViewer(data.logIn);
 				displaySuccessNotification('You have successfully logged in!');
+
+				sessionStorage.setItem('token', data.logIn.token);
 			}
 		}
 	});
