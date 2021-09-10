@@ -22,7 +22,7 @@ const logInViaCookie = async (token: string, db: Database, req: Request, res: Re
 	let viewer = updatedRes.value;
 	
 	if (!viewer) {
-		res.clearCookie('@tinyhouse/viewer', cookieOptions);
+		res.clearCookie('viewer', cookieOptions);
 	}
 
 	return viewer;
@@ -79,7 +79,7 @@ const logInViaGoogle = async (
 		viewer = insertResult.ops[0];
 	}
 
-	res.cookie('@tinyhouse/viewer', userId, {
+	res.cookie('viewer', userId, {
 		...cookieOptions,
 		maxAge: 365 * 24 * 60 * 60 * 1000
 	});
@@ -128,7 +128,7 @@ export const viewerResolvers: IResolvers = {
 		},
 		logOut: (_root: undefined, _args: {}, { res }: { res: Response }): Viewer => {
 			try {
-				res.clearCookie('@tinyhouse/viewer', cookieOptions)
+				res.clearCookie('viewer', cookieOptions)
 
 				return { didRequest: true };
 			} catch (err) {
