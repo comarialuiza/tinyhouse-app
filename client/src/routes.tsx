@@ -83,11 +83,13 @@ const Routes = () => {
 					<Route
 						path='/login'
 						exact
-						render={
-							props => <Login {...props} setViewer={setViewer} />
-						}
+						render={ props => <Login {...props} setViewer={setViewer} /> }
 					/>
-					<Route path='/user/:id' exact component={User} />
+					<Route
+						path='/user/:id'
+						exact
+						render={ props => <User {...props} viewer={ viewer }/>}
+					/>
 					<Route component={NotFound} />
 				</Switch>
 			</Layout>
